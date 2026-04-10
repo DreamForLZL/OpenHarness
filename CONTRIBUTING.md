@@ -18,6 +18,12 @@ cd OpenHarness
 uv sync --extra dev
 ```
 
+Optional **`channels`** extra (Slack / Telegram / Discord bots, HTTP API gateway, WeChat Work): these are **not** included in `uv sync` by default. Install when you work on those integrations:
+
+```bash
+uv sync --extra dev --extra channels
+```
+
 If you want to work on the React terminal UI as well:
 
 ```bash

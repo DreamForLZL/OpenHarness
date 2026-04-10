@@ -40,8 +40,8 @@ for arg in "$@"; do
             echo "Usage: $0 [--from-source] [--with-channels]"
             echo ""
             echo "  --from-source    Clone from GitHub and install in editable mode"
-            echo "  --with-channels  Also install IM channel dependencies"
-            echo "                   (slack-sdk, python-telegram-bot, discord.py)"
+            echo "  --with-channels  Also install channel extras (Slack/Telegram/Discord,"
+            echo "                   aiohttp & cryptography for HTTP API / WeChat Work)"
             exit 0
             ;;
         *)
@@ -223,27 +223,28 @@ if [ "$FROM_SOURCE" = true ]; then
     fi
 
     info "Installing in editable mode (pip install -e .)..."
-    $PIP_CMD install -e "$INSTALL_DIR" --quiet
+    if [ "$WITH_CHANNELS" = true ]; then
+        step "Installing OpenHarness with channel extras (--with-channels)"
+        info "Extras: slack-sdk, python-telegram-bot, discord.py, aiohttp, cryptography"
+        $PIP_CMD install -e "${INSTALL_DIR}[channels]" --quiet
+    else
+        $PIP_CMD install -e "$INSTALL_DIR" --quiet
+    fi
 else
     info "Mode: pip install openharness-ai"
-    $PIP_CMD install openharness-ai --quiet --upgrade
+    if [ "$WITH_CHANNELS" = true ]; then
+        step "Installing OpenHarness with channel extras (--with-channels)"
+        info "Extras: slack-sdk, python-telegram-bot, discord.py, aiohttp, cryptography"
+        $PIP_CMD install "openharness-ai[channels]" --quiet --upgrade
+    else
+        $PIP_CMD install openharness-ai --quiet --upgrade
+    fi
 fi
 
 success "OpenHarness package installed"
 
 # ---------------------------------------------------------------------------
-# Step 5: Install IM channel dependencies (--with-channels)
-# ---------------------------------------------------------------------------
-if [ "$WITH_CHANNELS" = true ]; then
-    step "Installing IM channel dependencies (--with-channels)"
-    CHANNEL_DEPS="slack-sdk python-telegram-bot discord.py"
-    info "Installing: ${CHANNEL_DEPS}"
-    $PIP_CMD install $CHANNEL_DEPS --quiet
-    success "Channel dependencies installed"
-fi
-
-# ---------------------------------------------------------------------------
-# Step 6: Install frontend/terminal npm dependencies
+# Step 5: Install frontend/terminal npm dependencies
 # ---------------------------------------------------------------------------
 if [ "$NODE_OK" = true ]; then
     # Determine the frontend/terminal path
@@ -264,7 +265,7 @@ if [ "$NODE_OK" = true ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Step 7: Create OpenHarness config directory
+# Step 6: Create OpenHarness config directory
 # ---------------------------------------------------------------------------
 step "Setting up OpenHarness config directory"
 
@@ -275,7 +276,7 @@ mkdir -p "$HOME/.openharness/plugins"
 success "Config directory ready: ~/.openharness/"
 
 # ---------------------------------------------------------------------------
-# Step 8: Verify installation
+# Step 7: Verify installation
 # ---------------------------------------------------------------------------
 step "Verifying installation"
 
@@ -297,7 +298,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Step 9: Add venv activation to shell profile
+# Step 8: Add venv activation to shell profile
 # ---------------------------------------------------------------------------
 step "Setting up shell integration"
 

@@ -87,6 +87,23 @@ class MochatConfig(BaseChannelConfig):
     token: str = ""
 
 
+class HttpApiConfig(BaseChannelConfig):
+    host: str = "0.0.0.0"
+    port: int = 8080
+    timeout: float = 300.0
+    cors_allow_origin: str = "*"
+
+
+class WeComConfig(BaseChannelConfig):
+    corp_id: str = ""
+    secret: str = ""
+    agent_id: int = 0
+    callback_token: str = ""
+    encoding_aes_key: str = ""
+    host: str = "0.0.0.0"
+    port: int = 8081
+
+
 class ChannelConfigs(_CompatModel):
     send_progress: bool = True
     send_tool_hints: bool = True
@@ -100,6 +117,8 @@ class ChannelConfigs(_CompatModel):
     matrix: MatrixConfig = Field(default_factory=MatrixConfig)
     whatsapp: WhatsAppConfig = Field(default_factory=WhatsAppConfig)
     mochat: MochatConfig = Field(default_factory=MochatConfig)
+    http_api: HttpApiConfig = Field(default_factory=HttpApiConfig)
+    wecom: WeComConfig = Field(default_factory=WeComConfig)
 
 
 class Config(_CompatModel):

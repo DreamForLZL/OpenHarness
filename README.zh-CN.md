@@ -41,7 +41,7 @@ curl -fsSL https://raw.githubusercontent.com/HKUDS/OpenHarness/main/scripts/inst
 常用安装参数：
 
 - `--from-source`：从源码安装，适合贡献者
-- `--with-channels`：一并安装 IM channel 依赖
+- `--with-channels`：一并安装可选依赖组 **`channels`**（IM 机器人 + HTTP 接口 + 企业微信 等：`slack-sdk`、`python-telegram-bot`、`discord.py`、`aiohttp`、`cryptography`）
 
 例如：
 
@@ -57,6 +57,26 @@ cd OpenHarness
 uv sync --extra dev
 uv run oh
 ```
+
+### 可选通道依赖（gateway / IM / HTTP / 企业微信）
+
+默认的 **`pip install -e .`** 以及不带 extra 的 **`uv sync`** 只装核心依赖，**不会**自动安装 Slack、Telegram、Discord、HTTP API 通道、企业微信通道所需的包。
+
+需要这些能力时，请安装 **`channels`** 可选依赖组：
+
+```bash
+pip install -e ".[channels]"
+```
+
+使用 **uv**（在克隆的仓库内）：
+
+```bash
+uv sync --extra channels
+# 或与开发依赖一起：
+uv sync --extra dev --extra channels
+```
+
+一键安装脚本里的 **`--with-channels`** 等价于安装同一组依赖（PyPI 为 `openharness-ai[channels]`，源码为 `pip install -e ".[channels]"`）。
 
 ---
 
@@ -358,6 +378,8 @@ cd OpenHarness
 uv sync --extra dev
 uv run pytest -q
 ```
+
+若开发 gateway 通道（IM、HTTP API、企业微信），请同时安装可选依赖：`uv sync --extra dev --extra channels`（说明见上文「可选通道依赖」）。
 
 更多信息：
 

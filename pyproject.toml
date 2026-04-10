@@ -40,6 +40,14 @@ dev = [
     "ruff>=0.5.0",
     "mypy>=1.10.0",
 ]
+# IM channels (Slack, Telegram, Discord) plus HTTP API & WeChat Work gateway channels
+channels = [
+    "slack-sdk",
+    "python-telegram-bot",
+    "discord.py",
+    "aiohttp>=3.9.0",
+    "cryptography>=42.0.0",
+]
 
 [project.scripts]
 openharness = "openharness.cli:app"

@@ -150,6 +150,30 @@ class ChannelManager:
             except ImportError as e:
                 logger.warning("Matrix channel not available: {}", e)
 
+        # HTTP API channel
+        if self.config.channels.http_api.enabled:
+            try:
+                from openharness.channels.impl.http_api import HttpApiChannel
+                self.channels["http_api"] = HttpApiChannel(
+                    self.config.channels.http_api,
+                    self.bus,
+                )
+                logger.info("HTTP API channel enabled")
+            except ImportError as e:
+                logger.warning("HTTP API channel not available: {}", e)
+
+        # WeChat Work (企业微信) channel
+        if self.config.channels.wecom.enabled:
+            try:
+                from openharness.channels.impl.wecom import WeComChannel
+                self.channels["wecom"] = WeComChannel(
+                    self.config.channels.wecom,
+                    self.bus,
+                )
+                logger.info("WeChat Work channel enabled")
+            except ImportError as e:
+                logger.warning("WeChat Work channel not available: {}", e)
+
         self._validate_allow_from()
 
     def _validate_allow_from(self) -> None:

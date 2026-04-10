@@ -152,7 +152,7 @@ class OhmoSessionRuntimePool:
                 session_key=session_key,
                 content=user_prompt,
             ),
-            metadata={"_progress": True, "_session_key": session_key},
+            metadata={"_progress": True, "_event_kind": "thinking", "_session_key": session_key},
         )
         async for event in bundle.engine.submit_message(user_message):
             if isinstance(event, AssistantTextDelta):
@@ -174,7 +174,7 @@ class OhmoSessionRuntimePool:
                         session_key=session_key,
                         content=user_prompt,
                     ),
-                    metadata={"_progress": True, "_session_key": session_key},
+                    metadata={"_progress": True, "_event_kind": "status", "_session_key": session_key},
                 )
                 continue
             if isinstance(event, ToolExecutionStarted):
@@ -200,7 +200,9 @@ class OhmoSessionRuntimePool:
                     ),
                     metadata={
                         "_progress": True,
+                        "_event_kind": "tool_start",
                         "_tool_hint": True,
+                        "_tool_name": event.tool_name,
                         "_session_key": session_key,
                     },
                 )
@@ -211,6 +213,16 @@ class OhmoSessionRuntimePool:
                     session_key,
                     bundle.session_id,
                     event.tool_name,
+                )
+                yield GatewayStreamUpdate(
+                    kind="tool_end",
+                    text=f"Finished {event.tool_name}",
+                    metadata={
+                        "_progress": True,
+                        "_event_kind": "tool_end",
+                        "_tool_name": event.tool_name,
+                        "_session_key": session_key,
+                    },
                 )
                 continue
             if isinstance(event, ErrorEvent):
@@ -223,7 +235,7 @@ class OhmoSessionRuntimePool:
                 yield GatewayStreamUpdate(
                     kind="error",
                     text=event.message,
-                    metadata={"_session_key": session_key},
+                    metadata={"_event_kind": "error", "_session_key": session_key},
                 )
                 return
             if isinstance(event, AssistantTurnComplete) and not reply_parts:
@@ -313,6 +325,8 @@ def _format_channel_progress(
         "dingtalk",
         "qq",
         "wechat",
+        "wecom",
+        "http_api",
     }:
         return text
     prefers_chinese = _prefers_chinese_progress(content)

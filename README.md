@@ -181,7 +181,7 @@ curl -fsSL https://raw.githubusercontent.com/HKUDS/OpenHarness/main/scripts/inst
 | Flag | Description |
 |------|-------------|
 | `--from-source` | Clone from GitHub and install in editable mode (`pip install -e .`) |
-| `--with-channels` | Also install IM channel dependencies (`slack-sdk`, `python-telegram-bot`, `discord.py`) |
+| `--with-channels` | Also install the optional **`channels`** extra (IM bots **and** HTTP API / WeChat Work: `slack-sdk`, `python-telegram-bot`, `discord.py`, `aiohttp`, `cryptography`) |
 
 ```bash
 # Install from source (for contributors / latest code)
@@ -231,6 +231,28 @@ export ANTHROPIC_MODEL=kimi-k2.5
 oh                    # if venv is activated
 uv run oh             # without activating venv
 ```
+
+### Optional channel dependencies
+
+Gateway integrations (IM bots, HTTP API, WeChat Work) need extra packages beyond the core install.
+
+The default editable install only includes **core** runtime dependencies. **`pip install -e .`** and **`uv sync`** (without extras) do **not** install packages needed for Slack, Telegram, Discord, the HTTP API channel, or the WeChat Work (企业微信) channel.
+
+Install the **`channels`** extra when you need those integrations:
+
+```bash
+pip install -e ".[channels]"
+```
+
+With **uv** (from a clone):
+
+```bash
+uv sync --extra channels
+# or combine with dev tools:
+uv sync --extra dev --extra channels
+```
+
+The one-click installer’s **`--with-channels`** flag uses this same extra (`openharness-ai[channels]` from PyPI, or `pip install -e ".[channels]"` from source).
 
 ### Configure A Workflow
 
@@ -743,6 +765,8 @@ cd OpenHarness
 uv sync --extra dev
 uv run pytest -q  # Verify everything works
 ```
+
+If you work on gateway channels (IM bots, HTTP API, WeChat Work), also install the optional **`channels`** extra: `uv sync --extra dev --extra channels` (see [Quick Start → Optional channel dependencies](#optional-channel-dependencies)).
 
 Useful contributor entry points:
 
